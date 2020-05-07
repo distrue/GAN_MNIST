@@ -1,0 +1,7 @@
+data/
+runs/
+mnist_data/
+
+__pycache__/
+
+.vscode/
