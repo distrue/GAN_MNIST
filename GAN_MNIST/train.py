@@ -5,6 +5,7 @@ import os
 import argparse
 import numpy as np
 
+from pathlib import Path
 from collections import namedtuple
 from torch.autograd import Variable
 from torch.utils.tensorboard import SummaryWriter
@@ -20,7 +21,16 @@ def train(opt):
     generator = GAN_MNIST_GENERATOR().cuda() if opt.gpu else GAN_MNIST_GENERATOR()
     discriminator = GAN_MNIST_DISCRIMINATOR().cuda() if opt.gpu else GAN_MNIST_DISCRIMINATOR()
 
-    # model.load_state_dict(torch.load('checkpoint.pt'))
+    checkpoint = Path().absolute().parent / 'checkpoint_generator.pt'
+    if checkpoint.exists():
+        print("loading generator checkpoint")
+        generator.load_state_dict(torch.load('checkpoint_generator.pt'))
+    
+    checkpoint = Path().absolute().parent / 'checkpoint_discriminator.pt'
+    if checkpoint.exists():
+        print("loading discriminator checkpoint")
+        generator.load_state_dict(torch.load('checkpoint_discriminator.pt'))
+    
     generator.train()
     discriminator.train()
 
@@ -98,8 +108,9 @@ def train(opt):
                 correct_train = (fake_result == 1).sum().item()
                 print('2> generator - creating fake image')
                 print('Loss : {:.2}, acc : {:.2}'.format(loss_gen, correct_train/total_train))
-        
-        # torch.save(model.state_dict(), 'checkpoint.pt')
+
+        torch.save(generator.state_dict(), Path().absolute().parent / 'checkpoint_generator.pt')
+        torch.save(discriminator.state_dict(), Path().absolute().parent / 'checkpoint_discriminator.pt')
 
 def get_opt():
     parser = argparse.ArgumentParser()
