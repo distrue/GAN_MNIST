@@ -10,14 +10,14 @@ from torchvision import datasets, transforms
 def MNISTDataset(mode='train'):
     if(mode == 'train'):
         return datasets.MNIST(
-            root=Path().absolute().parent / 'mnist_data',
+            root=Path().absolute().parent.parent / 'mnist_data',
             train=False,
             transform=transforms.ToTensor(),
             download=True
         )
     elif(mode == 'test'):
         return datasets.MNIST(
-            root=Path().absolute().parent / 'mnist_data',
+            root=Path().absolute().parent.parent / 'mnist_data',
             train=True,
             transform=transforms.ToTensor(),
             download=True

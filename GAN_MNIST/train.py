@@ -21,15 +21,15 @@ def train(opt):
     generator = GAN_MNIST_GENERATOR().cuda() if opt.gpu else GAN_MNIST_GENERATOR()
     discriminator = GAN_MNIST_DISCRIMINATOR().cuda() if opt.gpu else GAN_MNIST_DISCRIMINATOR()
 
-    checkpoint = Path().absolute().parent / 'checkpoint_generator.pt'
+    checkpoint = Path(__file__).absolute().parent.parent / 'checkpoint_generator.pt'
     if checkpoint.exists():
-        print("loading generator checkpoint")
-        generator.load_state_dict(torch.load('checkpoint_generator.pt'))
+        print("loading generator checkpoint from {}".format(checkpoint))
+        generator.load_state_dict(torch.load(checkpoint))
     
-    checkpoint = Path().absolute().parent / 'checkpoint_discriminator.pt'
+    checkpoint = Path(__file__).absolute().parent.parent / 'checkpoint_discriminator.pt'
     if checkpoint.exists():
-        print("loading discriminator checkpoint")
-        generator.load_state_dict(torch.load('checkpoint_discriminator.pt'))
+        print("loading discriminator checkpoint from {}".format(checkpoint))
+        discriminator.load_state_dict(torch.load(checkpoint))
     
     generator.train()
     discriminator.train()
@@ -109,8 +109,14 @@ def train(opt):
                 print('2> generator - creating fake image')
                 print('Loss : {:.2}, acc : {:.2}'.format(loss_gen, correct_train/total_train))
 
-        torch.save(generator.state_dict(), Path().absolute().parent / 'checkpoint_generator.pt')
-        torch.save(discriminator.state_dict(), Path().absolute().parent / 'checkpoint_discriminator.pt')
+        torch.save(generator.state_dict(), Path(__file__).absolute().parent.parent / 'checkpoint_generator.pt')
+        torch.save(discriminator.state_dict(), Path(__file__).absolute().parent.parent / 'checkpoint_discriminator.pt')
+
+def run():
+    Opts = namedtuple("Opts", 'gpu num_workers epoch batch_size test_batch_size display_step')
+    # debug setup on non GPU
+    opt = Opts(gpu=0, num_workers=0, epoch=100, batch_size=128, test_batch_size=1, display_step=100)
+    train(opt)
 
 def get_opt():
     parser = argparse.ArgumentParser()
@@ -123,12 +129,6 @@ def get_opt():
     opt = parser.parse_args()
     print(opt)
     return opt
-
-def run():
-    Opts = namedtuple("Opts", 'gpu num_workers epoch batch_size test_batch_size display_step')
-    # debug setup on non GPU
-    opt = Opts(gpu=0, num_workers=0, epoch=100, batch_size=128, test_batch_size=1, display_step=100)
-    train(opt)
 
 if __name__ == '__main__':
     opt = get_opt()
